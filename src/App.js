@@ -14,7 +14,6 @@ import {
 import { useState } from "react";
 
 function App() {
-  const [state, setState] = useState({ showNav: true });
 
   return (
     <>
@@ -22,7 +21,9 @@ function App() {
         <BrowserRouter>
           {/* Top bar*/}
           <div className=" height-10">
-            {state.showNav ? <NavBar /> : <div className="primary"></div>}
+              <NavBar>
+
+              </NavBar>
           </div>
 
           {/* Content*/}
