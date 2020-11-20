@@ -9,7 +9,7 @@ import {
   CodeLogin,
   QRLogin,
   SelectRegisterMode,
-  RegisterForm, Login, UserProfile, QROrden, DispenseProduct, ProductList, ProductDetails, PayPage
+  RegisterForm, Login, UserProfile, QROrden, DispenseProduct, ProductList, ProductDetails, PayPage, OrderDetail
 } from "./components/Pages";
 import { useState } from "react";
 
@@ -61,6 +61,8 @@ function App() {
             <Route exact path="/products" component={(props) => <ProductList />} />
             <Route exact path="/product/:productID" component={(props) => <ProductDetails />} />
             <Route exact path="/payment" component={(props) => <PayPage />} />
+            <Route exact path="/dispense/:orderID" component={(props) => <OrderDetail />} />
+
           </div>
         </BrowserRouter>
       </div>

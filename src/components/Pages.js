@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Button,
@@ -11,6 +11,8 @@ import {
   Form,
   FormFeedback,
   InputGroup,
+  Progress,
+  Spinner,
 } from "reactstrap";
 import logo from "../assets/img/modore.png";
 import qr from "../assets/img/frame.png";
@@ -19,7 +21,7 @@ import { Link, Redirect, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { randomNumber } from "../utils";
 import { useHistory } from "react-router-dom";
-import products from "./../products";
+import { products, orders } from "./../products";
 const StartPage = (props) => {
   return (
     <div className=" d-flex flex-column  justify-content-center align-items-center page">
@@ -127,7 +129,7 @@ const SelectRegisterMode = () => {
   return (
     <>
       <div className="d-flex flex-column justify-content-center align-items-center primary page">
-        <Row className ="d-flex flex-column justify-content-center align-items-center">
+        <Row className="d-flex flex-column justify-content-center align-items-center">
           <Col className="d-flex align-items-stretch mb-4">
             <Link to="/register" className="d-flex align-items-stretch">
               <Button>Ingresar mis datos</Button>
@@ -179,7 +181,10 @@ const RegisterForm = () => {
       <div className="d-flex flex-column justify-content-center align-items-center primary page">
         <Form onSubmit={handleSubmit(onSubmit, onError)}>
           <Row className="m-2 ">
-            <Col className="d-flex align-items-stretch justify-content-center" md={4}>
+            <Col
+              className="d-flex align-items-stretch justify-content-center"
+              md={4}
+            >
               <FormGroup>
                 <Label className="txt-secondary h5">Nombre</Label>
                 <Input
@@ -193,7 +198,10 @@ const RegisterForm = () => {
                 <FormFeedback>Campo requerido</FormFeedback>
               </FormGroup>
             </Col>
-            <Col className="d-flex align-items-stretch justify-content-center" md={4}>
+            <Col
+              className="d-flex align-items-stretch justify-content-center"
+              md={4}
+            >
               <FormGroup>
                 <Label className="txt-secondary h5">Apellido paterno</Label>
                 <Input
@@ -207,7 +215,10 @@ const RegisterForm = () => {
                 <FormFeedback>Campo requerido</FormFeedback>
               </FormGroup>
             </Col>
-            <Col className="d-flex align-items-stretch justify-content-center" md={4}>
+            <Col
+              className="d-flex align-items-stretch justify-content-center"
+              md={4}
+            >
               <FormGroup>
                 <Label className="txt-secondary h5">Apellido materno</Label>
                 <Input
@@ -223,7 +234,10 @@ const RegisterForm = () => {
             </Col>
           </Row>
           <Row className="m-2">
-            <Col className="d-flex align-items-stretch justify-content-center" md={4}>
+            <Col
+              className="d-flex align-items-stretch justify-content-center"
+              md={4}
+            >
               <FormGroup>
                 <Label className="txt-secondary h5">Fecha de nacimiento</Label>
                 <Input
@@ -237,7 +251,10 @@ const RegisterForm = () => {
                 <FormFeedback>Campo requerido</FormFeedback>
               </FormGroup>
             </Col>
-            <Col className="d-flex align-items-stretch justify-content-center" md={4}>
+            <Col
+              className="d-flex align-items-stretch justify-content-center"
+              md={4}
+            >
               <FormGroup>
                 <Label className="txt-secondary h5">Género</Label>
                 <Input
@@ -259,7 +276,10 @@ const RegisterForm = () => {
                 <FormFeedback>Campo requerido</FormFeedback>
               </FormGroup>
             </Col>
-            <Col className="d-flex align-items-stretch justify-content-center" md={4}>
+            <Col
+              className="d-flex align-items-stretch justify-content-center"
+              md={4}
+            >
               <FormGroup>
                 <Label className="txt-secondary h5">Celular</Label>
                 <Input
@@ -413,17 +433,50 @@ const Login = (props) => {
   );
 };
 const QROrden = () => {
+  const [valid, setValid] = useState(false);
+  const [orderID, setOrderID] = useState("");
+  const history = useHistory();
   return (
     <>
       <div className="d-flex flex-column justify-content-center align-items-center primary page">
         <div className="h3 p-4 txt-secondary">
-          Coloca el código frente a la camara
+          Coloque el código QR frente a la camara o ingrese el número de orden
         </div>
         <div className="camera-square "> </div>
-        <div className="m-4">
-          <Link to="/dispense">
-            <Button>Aceptar</Button>
-          </Link>
+        <div>
+          <FormGroup>
+            <Input
+              value={orderID}
+              onChange={(e) => {
+                const orderid = e.target.value;
+                setOrderID(orderid);
+                const order = orders.find((or) => or.id == orderid);
+                if (order) {
+                  setValid(true);
+                } else {
+                  setValid(false);
+                }
+              }}
+              valid={valid}
+              className="input-lg mt-2"
+            ></Input>
+            <FormFeedback>Numero de orden no válido</FormFeedback>
+          </FormGroup>
+        </div>
+        <div className="mt-2">
+          <Button
+            onClick={(e) => {
+              const order = orders.find((or) => or.id == orderID);
+              if (order) {
+                setValid(true);
+                history.push(`/dispense/${order.id}`);
+              } else {
+                setValid(false);
+              }
+            }}
+          >
+            Aceptar
+          </Button>
         </div>
       </div>
     </>
@@ -431,6 +484,8 @@ const QROrden = () => {
 };
 
 const DispenseProduct = () => {
+  const [busy, setBusy] = useState("f");
+
   return (
     <>
       <div className="d-flex flex-column justify-content-center align-items-center primary page">
@@ -439,9 +494,34 @@ const DispenseProduct = () => {
           Coloque el recipiente debajo de la llave expendedora
         </div>
         <div className="m-4">
-          <Link>
-            <Button>Dispensar producto</Button>
-          </Link>
+          {busy == "t" ? (
+            <div className="text-center txt-secondary h3 d-flex flex-column align-items-center">
+              Dispensando...
+              <Spinner
+                animated
+                value={100}
+                color=""
+                style={{ width: "4rem", height: "4rem", marginTop: "20px" }}
+              />
+            </div>
+          ) : busy == "f" ? (
+            <Button
+              onClick={(e) => {
+                setBusy("t");
+                setTimeout(() => {
+                  setBusy("d");
+                }, 10000);
+              }}
+            >
+              Dispensar producto
+            </Button>
+          ) : (
+            <div className="txt-secondary h3 d-flex flex-column align-items-center">
+              {" "}
+              <i className="fa fa-check" style={{ fontSize: "4rem" }}></i>
+              producto dispensado exitosamente{" "}
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -455,11 +535,11 @@ const ProductList = () => {
         <Row>
           {products.map((p) => {
             return (
-              <Col md={3}>
+              <Col md={4}>
                 <Link to={`/product/${p.id}`}>
-                  <img height="200px" src={productImg}></img>
+                  <img height="200px" src={p.img}></img>
                   <div className="txt-secondary h4">{p.name}</div>
-                  <div className=" h5">{p.price}</div>
+                  <div className=" h5">{p.price} $</div>
                 </Link>
               </Col>
             );
@@ -482,14 +562,14 @@ const ProductDetails = () => {
       <div className="d-flex flex-column justify-content-center  primary page">
         <Row className="d-flex flex-row justify-content-between">
           <Col md={4}>
-            <img src={productImg} width="100%" />
+            <img src={product.img} width="100%" />
           </Col>
           <Col md={8} className="txt-secondary h2">
             <Row>
               <div className="h1 txt-secondary">{product.name}</div>
             </Row>
             <Row>
-              <div c>{product.price} $/L</div>
+              <div c>{product.price} $</div>
             </Row>
             <Row>
               <div className="mr-3">Cantidad: </div>
@@ -564,16 +644,71 @@ const UserProfile = () => {
 };
 
 const PayPage = () => {
+  const history = useHistory()
+  useEffect(() => {
+    setTimeout(() =>{
+      history.replace("/dispense")
+    },10000)
+  })
   return (
     <div className="d-flex flex-column justify-content-center align-items-center primary page">
       <div className="h1 txt-secondary">Proceso de pago</div>
       <div className="h2 txt-secondary mb-4">
         Recibiras un Whatsapp / SMS / mail con el enlace para realizar tu pago
       </div>
-      <Link to="/dispense">
+      <div className ="text-center txt-secondary h3">
+        <Spinner
+          animated
+          value={100}
+          color=""
+          style={{ width: "4rem", height: "4rem", marginTop: "20px" }}
+        />
+      </div>
+      {/* <Link to="/dispense">
         <Button>Aceptar</Button>
-      </Link>
+      </Link> */}
     </div>
+  );
+};
+
+const OrderDetail = () => {
+  const { orderID } = useParams();
+  const order = orders.find((o) => o.id == orderID);
+  const product = order.product;
+
+  if (!orderID) return <Redirect to="/"></Redirect>;
+
+  return (
+    <>
+      <div className="d-flex flex-column justify-content-center  primary page">
+        <Row className="d-flex flex-row justify-content-between">
+          <Col md={4}>
+            <img src={product.img} width="100%" />
+          </Col>
+          <Col md={8} className="txt-secondary h2">
+            <Row>
+              <div className="h1 txt-secondary">{product.name}</div>
+            </Row>
+            <Row>
+              <div c>{product.price} $</div>
+            </Row>
+            <Row>
+              <div className="mr-3">Cantidad: </div>
+              <div> {product.quantity}</div>
+            </Row>
+            <Row>
+              <div className="mr-2">Total</div>
+              <div> {(product.quantity * product.price).toFixed(2)} $</div>
+            </Row>
+          </Col>
+        </Row>
+        <Row className="d-flex flex-row justify-content-end align-items-end">
+          <Link to="/dispense">
+            <Button>Dispensar</Button>
+          </Link>
+        </Row>
+      </div>
+    </>
   );
 };
 
@@ -592,4 +727,5 @@ export {
   DispenseProduct,
   ProductList,
   ProductDetails,
+  OrderDetail,
 };
