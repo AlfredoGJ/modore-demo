@@ -67,6 +67,9 @@ padding: 1.5rem !important;
 .icon-lg{
   font-size: 2rem;
 }
+.icon-md{
+  font-size: 3rem;
+}
 
 .txt-primary{
   color: var(--primary-color) !important;
@@ -92,4 +95,8 @@ padding: 1.5rem !important;
   border-color: var(--secondary-color);
   border-width: .2rem;
   width: 90px;
+}
+
+.pos-rel{
+  position: relative;
 }

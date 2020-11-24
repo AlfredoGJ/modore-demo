@@ -1,0 +1,10 @@
+.floating-button{
+    display: inline;
+    position: absolute;
+    bottom:5%;
+    right: 3%;
+   
+}
+.circle{
+    clip-path: circle(42% at 50% 50%);
+}

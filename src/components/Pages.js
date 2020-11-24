@@ -485,6 +485,20 @@ const QROrden = () => {
 
 const DispenseProduct = () => {
   const [busy, setBusy] = useState("f");
+  const history = useHistory();
+  const [counter, setCounter] = useState();
+  var i = 20
+  function countDown() {
+
+    i -= 1
+    setCounter(i)
+    if (i > 0) {
+      console.log(i)
+      setTimeout((e) => countDown(), 1000);
+    }
+    else
+      history.push("/")
+  }
 
   return (
     <>
@@ -510,16 +524,25 @@ const DispenseProduct = () => {
                 setBusy("t");
                 setTimeout(() => {
                   setBusy("d");
+                  countDown()
                 }, 10000);
               }}
             >
               Dispensar producto
             </Button>
           ) : (
-            <div className="txt-secondary h3 d-flex flex-column align-items-center">
-              {" "}
+            <div className="txt-secondary h3 d-flex flex-column align-items-center"  >
+              
               <i className="fa fa-check" style={{ fontSize: "4rem" }}></i>
               producto dispensado exitosamente{" "}
+              <Button className="mt-4" onClick={(e) => history.push("/")}>
+                Ir al inicio
+              </Button>
+              <div className ="mt-4">
+
+                volviendo automaticamente en  {counter} segundos
+
+              </div>
             </div>
           )}
         </div>
@@ -644,19 +667,19 @@ const UserProfile = () => {
 };
 
 const PayPage = () => {
-  const history = useHistory()
+  const history = useHistory();
   useEffect(() => {
-    setTimeout(() =>{
-      history.replace("/dispense")
-    },10000)
-  })
+    setTimeout(() => {
+      history.replace("/dispense");
+    }, 10000);
+  });
   return (
     <div className="d-flex flex-column justify-content-center align-items-center primary page">
       <div className="h1 txt-secondary">Proceso de pago</div>
       <div className="h2 txt-secondary mb-4">
         Recibiras un Whatsapp / SMS / mail con el enlace para realizar tu pago
       </div>
-      <div className ="text-center txt-secondary h3">
+      <div className="text-center txt-secondary h3">
         <Spinner
           animated
           value={100}

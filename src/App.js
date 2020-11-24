@@ -12,6 +12,7 @@ import {
   RegisterForm, Login, UserProfile, QROrden, DispenseProduct, ProductList, ProductDetails, PayPage, OrderDetail
 } from "./components/Pages";
 import { useState } from "react";
+import Help from "./components/Help";
 
 function App() {
 
@@ -27,7 +28,7 @@ function App() {
           </div>
 
           {/* Content*/}
-          <div className="height-90">
+          <div className="height-90 pos-rel">
             <Route
               exact
               path="/"
@@ -65,6 +66,7 @@ function App() {
 
           </div>
         </BrowserRouter>
+          <Help/>
       </div>
     </>
   );
