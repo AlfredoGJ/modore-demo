@@ -19,7 +19,7 @@ function App() {
   return (
     <>
       <div className="d-flex flex-column justify-content-between height-100">
-        <BrowserRouter>
+        <BrowserRouter  >
           {/* Top bar*/}
           <div className=" height-10">
               <NavBar>
@@ -58,11 +58,11 @@ function App() {
             <Route exact path="/login" component={(props) => <Login />} />
             <Route exact path="/user" component={(props) => <UserProfile />} />
             <Route exact path="/user/:userID" component={(props) => <UserProfile />} />
-            <Route exact path="/dispense" component={(props) => <DispenseProduct />} />
+            <Route exact path="/dispense/:product_id" component={(props) => <DispenseProduct />} />
             <Route exact path="/products" component={(props) => <ProductList />} />
             <Route exact path="/product/:productID" component={(props) => <ProductDetails />} />
-            <Route exact path="/payment" component={(props) => <PayPage />} />
-            <Route exact path="/dispense/:orderID" component={(props) => <OrderDetail />} />
+            <Route exact path="/payment/:product_id" component={(props) => <PayPage />} />
+            <Route exact path="/dispense_order/:orderID" component={(props) => <OrderDetail />} />
 
           </div>
         </BrowserRouter>

@@ -22,6 +22,7 @@ import { useForm } from "react-hook-form";
 import { randomNumber } from "../utils";
 import { useHistory } from "react-router-dom";
 import { products, orders } from "./../products";
+import axios from "axios";
 const StartPage = (props) => {
   return (
     <div className=" d-flex flex-column  justify-content-center align-items-center page">
@@ -469,7 +470,7 @@ const QROrden = () => {
               const order = orders.find((or) => or.id == orderID);
               if (order) {
                 setValid(true);
-                history.push(`/dispense/${order.id}`);
+                history.push(`/dispense_order/${order.id}`);
               } else {
                 setValid(false);
               }
@@ -487,6 +488,10 @@ const DispenseProduct = () => {
   const [busy, setBusy] = useState("f");
   const history = useHistory();
   const [counter, setCounter] = useState();
+  const {product_id} = useParams()
+  console.log("pid",product_id)
+  var product = products.find(p => p.id == product_id)
+  console.log("product",product)
   var i = 20
   function countDown() {
 
@@ -526,6 +531,10 @@ const DispenseProduct = () => {
                   setBusy("d");
                   countDown()
                 }, 10000);
+
+                axios.post('https://modore-api.herokuapp.com/orders',{id_usuario:2, id_producto:product.id, ml:product.ml, costo:product.costo, order:Math.floor((Math.random()*1000)+10)})
+                .then(res => console.log("success"))
+                .catch(err => console.log(err))
               }}
             >
               Dispensar producto
@@ -617,7 +626,7 @@ const ProductDetails = () => {
           </Col>
         </Row>
         <Row className="d-flex flex-row justify-content-end align-items-end">
-          <Link to="/payment">
+          <Link to={"/payment/"+product.id}>
             <Button>Pagar</Button>
           </Link>
         </Row>
@@ -668,9 +677,11 @@ const UserProfile = () => {
 
 const PayPage = () => {
   const history = useHistory();
+  const {product_id} = useParams()
+  console.log(product_id)
   useEffect(() => {
     setTimeout(() => {
-      history.replace("/dispense");
+      history.replace("/dispense/"+product_id);
     }, 10000);
   });
   return (
@@ -726,7 +737,7 @@ const OrderDetail = () => {
           </Col>
         </Row>
         <Row className="d-flex flex-row justify-content-end align-items-end">
-          <Link to="/dispense">
+          <Link to="/dispense/1">
             <Button>Dispensar</Button>
           </Link>
         </Row>
