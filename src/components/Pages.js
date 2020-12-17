@@ -488,21 +488,18 @@ const DispenseProduct = () => {
   const [busy, setBusy] = useState("f");
   const history = useHistory();
   const [counter, setCounter] = useState();
-  const {product_id} = useParams()
-  console.log("pid",product_id)
-  var product = products.find(p => p.id == product_id)
-  console.log("product",product)
-  var i = 20
+  const { product_id } = useParams();
+  console.log("pid", product_id);
+  var product = products.find((p) => p.id == product_id);
+  console.log("product", product);
+  var i = 20;
   function countDown() {
-
-    i -= 1
-    setCounter(i)
+    i -= 1;
+    setCounter(i);
     if (i > 0) {
-      console.log(i)
+      console.log(i);
       setTimeout((e) => countDown(), 1000);
-    }
-    else
-      history.push("/")
+    } else history.push("/");
   }
 
   return (
@@ -529,28 +526,39 @@ const DispenseProduct = () => {
                 setBusy("t");
                 setTimeout(() => {
                   setBusy("d");
-                  countDown()
+                  countDown();
                 }, 10000);
 
-                axios.post('https://modore-api.herokuapp.com/orders',{id_usuario:2, id_producto:product.id, ml:product.ml, costo:product.costo, order:Math.floor((Math.random()*1000)+10)})
-                .then(res => console.log("success"))
-                .catch(err => console.log(err))
+                fetch("https://modore-api.herokuapp.com/api/consulta/orders", {
+                  method: "POST",
+                  redirect: "follow",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    id_usuario: 2,
+                    id_producto: product.id,
+                    ml: product.ml,
+                    costo: product.price,
+                    order: Math.floor(Math.random() * 1000 + 10),
+                  }),
+                })
+                  .then((response) => response.text())
+                  .then((result) => console.log(result))
+                  .catch((error) => console.log("error", error));
               }}
             >
               Dispensar producto
             </Button>
           ) : (
-            <div className="txt-secondary h3 d-flex flex-column align-items-center"  >
-              
+            <div className="txt-secondary h3 d-flex flex-column align-items-center">
               <i className="fa fa-check" style={{ fontSize: "4rem" }}></i>
               producto dispensado exitosamente{" "}
               <Button className="mt-4" onClick={(e) => history.push("/")}>
                 Ir al inicio
               </Button>
-              <div className ="mt-4">
-
-                volviendo automaticamente en  {counter} segundos
-
+              <div className="mt-4">
+                volviendo automaticamente en {counter} segundos
               </div>
             </div>
           )}
@@ -626,7 +634,7 @@ const ProductDetails = () => {
           </Col>
         </Row>
         <Row className="d-flex flex-row justify-content-end align-items-end">
-          <Link to={"/payment/"+product.id}>
+          <Link to={"/payment/" + product.id}>
             <Button>Pagar</Button>
           </Link>
         </Row>
@@ -677,11 +685,11 @@ const UserProfile = () => {
 
 const PayPage = () => {
   const history = useHistory();
-  const {product_id} = useParams()
-  console.log(product_id)
+  const { product_id } = useParams();
+  console.log(product_id);
   useEffect(() => {
     setTimeout(() => {
-      history.replace("/dispense/"+product_id);
+      history.replace("/dispense/" + product_id);
     }, 10000);
   });
   return (
